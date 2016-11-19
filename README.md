@@ -1,7 +1,7 @@
 Monitor critical system or application state changes and verbally notify blind users using windows speech synthesizer.
 
 Contributors:
-David Staulcup, <Your Name Here!>
+David Staulcup, [Your Name Here!]
 
 Implementation:
 -target platforms are windows 7 and windows 10 desktop
