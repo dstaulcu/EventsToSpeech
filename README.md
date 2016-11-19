@@ -1,0 +1,1 @@
+# Assistive_isHungAppWindow_EventLogToSpeech
