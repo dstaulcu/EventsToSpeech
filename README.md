@@ -1,15 +1,21 @@
-Monitor critical system or application state changes and verbally notify blind users with windows speech synthesizer.
 
-Contributors:
-David Staulcup, [Your Name Here!]
+Name: SystemEventsToSpeech.ps1
+Description: Monitor critcal system/application state changes and verbally notify user using windows SpeechSynthesizer	
+Version/Date: 1.0.1 11/19/2016
+Requirements: Windows 7 Desktop, Powershell Enabled, Run-as Admin or Local System
 
-Implementation:
--target platforms are windows 7 and windows 10 desktop
--develop/deploy as PowerShell script to enable customization by local administrators
--script to be invoked by scheduled task at user logon and to run as local system
--script to close itself at user logoff
+Original Author: David Staulcup 
+Current maintainers: David Staulcup 
+Contributors:	https://github.com/akahn16, 
 
-Notification types:
--when assistive technology applications (screen readers, etc.) close or crash
--when any user mode application enters or exits a Not Responding state (aka UI delay, aka IsHungAppWindow ) 
--during periods of excessive CPU utilization, disk queing, network retransmits, etc.
+
+Update History:
+-------------------------------
+
+	1.1.0
+	--------
+	Add support for multiple NT Event Log subscriptions 
+
+	1.0.0
+	--------
+	Initial Version
