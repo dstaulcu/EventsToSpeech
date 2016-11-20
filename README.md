@@ -1,4 +1,4 @@
-Monitor critical system or application state changes and verbally notify blind users using windows speech synthesizer.
+Monitor critical system or application state changes and verbally notify blind users with windows speech synthesizer.
 
 Contributors:
 David Staulcup, [Your Name Here!]
