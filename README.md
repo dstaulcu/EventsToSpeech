@@ -38,4 +38,4 @@ Testing Notes:
 -------------------------------
 
 	CreateTestHangEvents.cmd included to create logs written by hangdetecter.exe (not public).
-	VirMemTest64.exe (published by Aaron Margosis) included to induce crashes and high CPU states.
+	VirMemTest64.exe (published by Aaron Margosis) included to induce crashes and high CPU states for testing.

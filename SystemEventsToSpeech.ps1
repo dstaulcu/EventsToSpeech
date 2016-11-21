@@ -56,7 +56,7 @@ WHERE TargetInstance isa 'Win32_NTLogEvent'
     AND TargetInstance.SourceName = 'Microsoft Windows security auditing.' 
     AND (TargetInstance.EventCode = '4634' OR TargetInstance.EventCode= '4647' OR TargetInstance.EventCode= '4624' OR TargetInstance.EventCode= '4625')
 "@
-Register-WmiEvent -SourceIdentifier 'Assistive_NTLogEvent_Logon' -Query $WQL_NTLogEvent_Logon
+#Register-WmiEvent -SourceIdentifier 'Assistive_NTLogEvent_Logon' -Query $WQL_NTLogEvent_Logon
 
 
 # create SpeechSynth object
@@ -113,6 +113,7 @@ do{
         }
 
         # Handle Logon related events
+        <#
         if ($event.SourceIdentifier -eq 'Assistive_NTLogEvent_Logon') {
 
             # if account logoff event
@@ -140,7 +141,8 @@ do{
             }
 
         }
- 
+        #>
+
         # Remove notification event now that necessary information has been extracted
         $event | Remove-Event
 
