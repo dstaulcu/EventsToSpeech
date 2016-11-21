@@ -15,7 +15,7 @@
    eventcreate.exe /T Information /ID 1000 /L Application /D ""ProcessName":"notepad","
 #>
 
-$sourceid = 'Assistive'
+$sourceid = 'Assistive_NTLogEvent'
 $classname  = 'Win32_NTLogEvent' 
 $query = "SELECT * FROM __InstanceCreationEvent WITHIN 5"
 $query += " WHERE TargetInstance isa '" + $classname + "' AND " 
@@ -30,7 +30,7 @@ $query += " AND TargetInstance.SourceName = '" + $eventlog_hang_sourcename + "'"
 $query += " AND (TargetInstance.EventCode = '" + $eventlog_hang_eventcode_begin + "' OR TargetInstance.EventCode = '" + $eventlog_hang_eventcode_end + "'))"
 # CrashLog Event (System, EventCreate and 1000)
 $eventlog_crash_logfile = 'Application'
-$eventlog_crash_sourcename = 'EventCreate'
+$eventlog_crash_sourcename = 'Application Error'
 $eventlog_crash_eventcode_begin = '1000'
 $query += " OR (TargetInstance.Logfile = '" + $eventlog_crash_logfile + "'"
 $query += " AND TargetInstance.SourceName = '" + $eventlog_crash_sourcename + "'"
@@ -45,7 +45,7 @@ $SpeechSynth = New-Object System.Speech.Synthesis.SpeechSynthesizer
 Register-WmiEvent -SourceIdentifier $sourceid -Query $query
 
 # Loop for specified period of time for testing
-$number = 20
+$number = 30
 $i = 1
 
 do{
@@ -57,8 +57,22 @@ do{
     $Events = Get-Event | Where-Object -Property SourceIdentifier -EQ $sourceid 
     foreach ($event in $events) {
         
-        $process = ([regex]"ProcessName:(\w+),").match($event.SourceArgs.newevent.targetinstance.message).Groups[1].Value
+	#Regex to recognize process names in the windows application logs
+        $process = ([regex]"(\w+).exe,").match($event.SourceArgs.newevent.targetinstance.message).Groups[1].Value
         $event_code = $event.SourceArgs.newevent.TargetInstance.EventCode
+
+    #Change $process to a "friendly" name
+    switch -Wildcard ($process)
+    {
+      notepad*     {$process="Note Pad"}
+      winword*     {$process="Microsoft Word"}
+      powerpnt*    {$process="Microsoft Power Point"}
+      excel*       {$process="Microsoft Excel"}
+      notes*       {$process="Lotus Notes"}
+      VirtMemTest* {$process="Testing Application"}
+      EventCreate* {$process="Testing Application"}
+      default      {$process} #Unrecognized Program
+    }
 
         # if a hang start event
         if ($event_code -eq $eventlog_hang_eventcode_begin) {
