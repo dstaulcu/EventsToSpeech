@@ -1,10 +1,10 @@
 
 Synopsis:
 -------------------------------
-Audible notifications of critical system events, including the following:
+Provides audible notification of critical system events, including:
 
 	unresponsive applications
-	application crashes
+	application errors
 	failed logons
 
 Requirements:
@@ -12,14 +12,14 @@ Requirements:
 
 	Windows 7 operating system
 	Powershell execution enabled
-	Execute with local system or admin creds
+	Script execution with local system or admin credentials
 
 Update History:
 -------------------------------
 
-	1.2.1
+	1.3.0
 	--------
-	Modularization of code simplify addition of new features
+	Improve organization of script to simplify addition planned features
 
 	1.2.0
 	--------
@@ -37,5 +37,5 @@ Update History:
 Testing Notes:
 -------------------------------
 
-	VirMemTest can be used to induce hangs, crashes and high CPU states for testing
-	https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations/
+	CreateTestNTLogEvents.cmd included to create logs written by hangdetecter.exe (not public).
+	VirMemTest64.exe (published by Aaron Margosis) included to induce crashes and high CPU states.
