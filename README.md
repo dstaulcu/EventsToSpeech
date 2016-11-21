@@ -1,14 +1,13 @@
 
-Name: SystemEventsToSpeech.ps1
-Description: Monitor critcal system/application state changes and verbally notify user using windows SpeechSynthesizer
-Version/Date: 1.0.1 11/19/2016
-Requirements: Windows 7 Desktop, Powershell Enabled, Run-as Admin or Local System
+Monitor critcal system/application state changes and verbally notify user using windows SpeechSynthesizer
 
-Original Author: David Staulcup 
-Current maintainers: David Staulcup 
-Contributors:	https://github.com/akahn16
+Requirements: 
+Windows 7 Desktop
+Powershell Enabled
+Run-as Admin or Local System
 
-Note:  VirMemTest can be used to induce hangs, crashes and high CPU states for testing
+Notes:
+VirMemTest can be used to induce hangs, crashes and high CPU states for testing
 https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations/
 
 Update History:
