@@ -19,7 +19,7 @@ Update History:
 
 	1.3.0
 	--------
-	Improve organization of script to simplify addition planned features
+	Improve organization of script to simplify addition of planned features
 
 	1.2.0
 	--------
@@ -37,5 +37,5 @@ Update History:
 Testing Notes:
 -------------------------------
 
-	CreateTestNTLogEvents.cmd included to create logs written by hangdetecter.exe (not public).
+	CreateTestHangEvents.cmd included to create logs written by hangdetecter.exe (not public).
 	VirMemTest64.exe (published by Aaron Margosis) included to induce crashes and high CPU states.
