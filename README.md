@@ -1,17 +1,25 @@
 
-Monitor critcal system/application state changes and verbally notify user using windows SpeechSynthesizer
+Synopsis:
+-------------------------------
+Audible notifications of critical system events, including the following:
 
-Requirements: 
-Windows 7 Desktop
-Powershell Enabled
-Run-as Admin or Local System
+	unresponsive applications
+	application crashes
+	failed logons
 
-Notes:
-VirMemTest can be used to induce hangs, crashes and high CPU states for testing
-https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations/
+Requirements:
+-------------------------------
+
+	Windows 7 operating system
+	Powershell execution enabled
+	Execute with local system or admin creds
 
 Update History:
 -------------------------------
+
+	1.2.1
+	--------
+	Modularization of code simplify addition of new features
 
 	1.2.0
 	--------
@@ -25,3 +33,9 @@ Update History:
 	1.0.0
 	--------
 	Initial Version
+
+Testing Notes:
+-------------------------------
+
+	VirMemTest can be used to induce hangs, crashes and high CPU states for testing
+	https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations/

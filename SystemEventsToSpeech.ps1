@@ -1,48 +1,67 @@
 ﻿<#
 .Synopsis
    Monitor critcal system/application state changes and verbally notify user using windows SpeechSynthesizer 
-
-.DESCRIPTION
-   This is a test harness.  You can trigger test messages using the EventCreate command line tool
-
-   # to simulate the beginning of a hang event for notepad.exe:
-   eventcreate.exe /T Information /ID 50 /L Application /D ""ProcessName":"notepad","
-
-   # to simulate the end of a hang event fir notepad.exe:
-   eventcreate.exe /T Information /ID 51 /L Application /D ""ProcessName":"notepad","
-
-   # to simulate a crash event for notepad.exe:
-   eventcreate.exe /T Information /ID 1000 /L Application /D ""ProcessName":"notepad","
 #>
 
-$sourceid = 'Assistive_NTLogEvent'
-$classname  = 'Win32_NTLogEvent' 
-$query = "SELECT * FROM __InstanceCreationEvent WITHIN 5"
-$query += " WHERE TargetInstance isa '" + $classname + "' AND " 
-$query += "("
-# HangDetector Event (Applocation, EventCreate and 50 or 51)
-$eventlog_hang_logfile = 'Application'
-$eventlog_hang_sourcename = 'EventCreate'
-$eventlog_hang_eventcode_begin = '50'
-$eventlog_hang_eventcode_end = '51'
-$query += " (TargetInstance.Logfile = '" + $eventlog_hang_logfile + "'"
-$query += " AND TargetInstance.SourceName = '" + $eventlog_hang_sourcename + "'"
-$query += " AND (TargetInstance.EventCode = '" + $eventlog_hang_eventcode_begin + "' OR TargetInstance.EventCode = '" + $eventlog_hang_eventcode_end + "'))"
-# CrashLog Event (System, EventCreate and 1000)
-$eventlog_crash_logfile = 'Application'
-$eventlog_crash_sourcename = 'Application Error'
-$eventlog_crash_eventcode_begin = '1000'
-$query += " OR (TargetInstance.Logfile = '" + $eventlog_crash_logfile + "'"
-$query += " AND TargetInstance.SourceName = '" + $eventlog_crash_sourcename + "'"
-$query += " AND TargetInstance.EventCode = '" + $eventlog_crash_eventcode_begin + "')"
-$query += ")"
+
+function Get-ProcessFriendlyName ($ProcessName)
+{
+    switch -Wildcard ($ProcessName)
+    {
+        notepad*     {$ProcessName="Note Pad"}
+        winword*     {$ProcessName="Microsoft Word"}
+        powerpnt*    {$ProcessName="Microsoft Power Point"}
+        excel*       {$ProcessName="Microsoft Excel"}
+        notes*       {$ProcessName="Lotus Notes"}
+        VirtMemTest* {$ProcessName="Testing Application"}
+        EventCreate* {$ProcessName="Testing Application"}
+    }
+    return $ProcessName
+}
+
+
+# Hang detector log event subscription
+$WQL_NTLogEvent_Hang = @"
+SELECT * 
+FROM __InstanceCreationEvent 
+WITHIN 5 
+WHERE TargetInstance isa 'Win32_NTLogEvent' 
+    AND TargetInstance.Logfile = 'Application' 
+    AND TargetInstance.SourceName = 'EventCreate' 
+    AND (TargetInstance.EventCode = '50' OR TargetInstance.EventCode = '51')
+"@
+Register-WmiEvent -SourceIdentifier 'Assistive_NTLogEvent_Hang' -Query $WQL_NTLogEvent_Hang
+
+
+# Application Error log event subscription
+$WQL_NTLogEvent_Crash = @"
+SELECT * 
+FROM __InstanceCreationEvent 
+WITHIN 5 
+WHERE TargetInstance isa 'Win32_NTLogEvent' 
+    AND TargetInstance.Logfile = 'Application' 
+    AND TargetInstance.SourceName = 'Application Error' 
+    AND TargetInstance.EventCode = '1000'
+"@
+Register-WmiEvent -SourceIdentifier 'Assistive_NTLogEvent_Crash' -Query $WQL_NTLogEvent_Crash
+
+
+# Logon/Logoff log event subscription
+$WQL_NTLogEvent_Logon = @"
+SELECT * 
+FROM __InstanceCreationEvent 
+WITHIN 5 
+WHERE TargetInstance isa 'Win32_NTLogEvent' 
+    AND TargetInstance.Logfile = 'Security' 
+    AND TargetInstance.SourceName = 'Microsoft Windows security auditing.' 
+    AND (TargetInstance.EventCode = '4634' OR TargetInstance.EventCode= '4647' OR TargetInstance.EventCode= '4624' OR TargetInstance.EventCode= '4625')
+"@
+Register-WmiEvent -SourceIdentifier 'Assistive_NTLogEvent_Logon' -Query $WQL_NTLogEvent_Logon
+
 
 # create SpeechSynth object
 Add-Type -AssemblyName System.speech
 $SpeechSynth = New-Object System.Speech.Synthesis.SpeechSynthesizer
-
-# Register for specified system event notifications
-Register-WmiEvent -SourceIdentifier $sourceid -Query $query
 
 # Loop for specified period of time for testing
 $number = 30
@@ -54,52 +73,94 @@ do{
     $i++ 
 
     # enumerate any new events which have occured since last check
-    $Events = Get-Event | Where-Object -Property SourceIdentifier -EQ $sourceid 
+    $Events = Get-Event | Where-Object -Property SourceIdentifier -Like 'Assistive_*'
+
     foreach ($event in $events) {
-        
-	#Regex to recognize process names in the windows application logs
-        $process = ([regex]"(\w+).exe,").match($event.SourceArgs.newevent.targetinstance.message).Groups[1].Value
-        $event_code = $event.SourceArgs.newevent.TargetInstance.EventCode
 
-    #Change $process to a "friendly" name
-    switch -Wildcard ($process)
-    {
-      notepad*     {$process="Note Pad"}
-      winword*     {$process="Microsoft Word"}
-      powerpnt*    {$process="Microsoft Power Point"}
-      excel*       {$process="Microsoft Excel"}
-      notes*       {$process="Lotus Notes"}
-      VirtMemTest* {$process="Testing Application"}
-      EventCreate* {$process="Testing Application"}
-      default      {$process} #Unrecognized Program
-    }
+        $blnHandledEvent = $False
 
-        # if a hang start event
-        if ($event_code -eq $eventlog_hang_eventcode_begin) {
-            $message = $process + ' entered an unresponsive state.'
-        }
+        # Handle hange related events
+        if ($event.SourceIdentifier -eq 'Assistive_NTLogEvent_Hang') {
+
+            # if a hang start event
+            if ($event.SourceArgs.newevent.TargetInstance.EventCode -eq '50') {
+                $blnHandledEvent = $True
+                $process = ([regex]"(\w+).exe,").match($event.SourceArgs.newevent.targetinstance.message).Groups[1].Value
+                $process = Get-ProcessFriendlyName($process)
+                $message = $process + ' entered an unresponsive state.'
+            }
  
-        # if a hang end event
-        if ($event_code -eq $eventlog_hang_eventcode_end) {
-            $message = $process + ' returned to a responsive state.'
+            # if a hang end event
+            if ($event.SourceArgs.newevent.TargetInstance.EventCode -eq '51') {
+                $blnHandledEvent = $True
+                $process = ([regex]"(\w+).exe,").match($event.SourceArgs.newevent.targetinstance.message).Groups[1].Value
+                $process = Get-ProcessFriendlyName($process)
+                $message = $process + ' returned to a responsive state.'
+            }
         }
-        # if a crash event
-        if ($event_code -eq $eventlog_crash_eventcode_begin) {
-            $message = $process + ' crashed and must be restarted.'
+
+        # Handle Crash related events
+        if ($event.SourceIdentifier -eq 'Assistive_NTLogEvent_Crash') {
+
+            # if a crash event
+            if ($event.SourceArgs.newevent.TargetInstance.EventCode -eq '1000') {
+                $blnHandledEvent = $True
+                $process = ([regex]"(\w+).exe,").match($event.SourceArgs.newevent.targetinstance.message).Groups[1].Value
+                $process = Get-ProcessFriendlyName($process)
+                $message = $process + ' crashed and must be restarted.'
+            }
+
+        }
+
+        # Handle Logon related events
+        if ($event.SourceIdentifier -eq 'Assistive_NTLogEvent_Logon') {
+
+            # if account logoff event
+            if ($event.SourceArgs.newevent.TargetInstance.EventCode -eq '4634') {
+                $blnHandledEvent = $True
+                $message = 'some account was logged off.'
+            }
+
+            # if user initiated logoff event
+            if ($event.SourceArgs.newevent.TargetInstance.EventCode -eq '4647') {
+                $blnHandledEvent = $True
+                $message = 'some user initiated logoff.'
+            }
+
+            # if account success logon
+            if ($event.SourceArgs.newevent.TargetInstance.EventCode -eq '4624') {
+                $blnHandledEvent = $True
+                $message = 'account success logon.'
+            }
+
+            # if account failed logon
+            if ($event.SourceArgs.newevent.TargetInstance.EventCode -eq '4625') {
+                $blnHandledEvent = $True
+                $message = 'account failed logon.'
+            }
+
         }
  
         # Remove notification event now that necessary information has been extracted
         $event | Remove-Event
 
         # Print and speak the system information to user
-        write-host $message
-        $SpeechSynth.Speak($message)
+        if ($blnHandledEvent = $True) {
+            write-host $message
+            $SpeechSynth.Speak($message)
+        }
+
+        if ($blnHandledEvent = $False) {
+            Write-Host 'Unhandled Event:'
+            Write-Host 'SourceIdentifier = ' + $event.SourceIdentifier
+        }
+          
     }  
 }
 while ($i -le $number)
 
 # Dispose of event subscriptions
-Get-EventSubscriber  | Where-Object -Property SourceIdentifier -EQ $sourceid | Unregister-Event
+Get-EventSubscriber  | Where-Object -Property SourceIdentifier -Like 'Assistive_*' | Unregister-Event
 
 # Dispose of speech object
 $SpeechSynth.Dispose()
