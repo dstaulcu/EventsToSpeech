@@ -19,6 +19,16 @@ function Get-ProcessFriendlyName ($ProcessName)
     return $ProcessName
 }
 
+# cleanup any subscriptions hanging around from previous sessions.
+Get-EventSubscriber  | Where-Object -Property SourceIdentifier -Like 'Assistive_*' | Unregister-Event
+Get-Event | Where-Object -Property SourceIdentifier -Like 'Assistive_*' | Remove-Event
+
+# create SpeechSynth object
+Add-Type -AssemblyName System.speech
+$SpeechSynth = New-Object System.Speech.Synthesis.SpeechSynthesizer
+
+# notify users of application startup
+$SpeechSynth.Speak('The system event notification service has started.')
 
 # Hang detector log event subscription
 $WQL_NTLogEvent_Hang = @"
@@ -59,18 +69,8 @@ WHERE TargetInstance isa 'Win32_NTLogEvent'
 #Register-WmiEvent -SourceIdentifier 'Assistive_NTLogEvent_Logon' -Query $WQL_NTLogEvent_Logon
 
 
-# create SpeechSynth object
-Add-Type -AssemblyName System.speech
-$SpeechSynth = New-Object System.Speech.Synthesis.SpeechSynthesizer
-
-# Loop for specified period of time for testing
-$number = 30
-$i = 1
-
 do{
-    write-host "loop $i of $number"
     sleep  1
-    $i++ 
 
     # enumerate any new events which have occured since last check
     $Events = Get-Event | Where-Object -Property SourceIdentifier -Like 'Assistive_*'
@@ -159,7 +159,7 @@ do{
           
     }  
 }
-while ($i -le $number)
+while ($True)
 
 # Dispose of event subscriptions
 Get-EventSubscriber  | Where-Object -Property SourceIdentifier -Like 'Assistive_*' | Unregister-Event
