@@ -4,6 +4,7 @@ Synopsis:
 Powershell script providing audible notifications of application crash or hang incidents.
 
 Requirements:
+-------------------------------
 
 	Windows 7 (or higher) operating system
 	Powershell execution enabled
