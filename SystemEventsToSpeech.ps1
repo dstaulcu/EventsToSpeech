@@ -1,6 +1,7 @@
 ﻿<#
 .Synopsis
    Monitor critcal system/application state changes and verbally notify user using windows SpeechSynthesizer 
+   version 1.4.0
 #>
 
 # Helper functions for building the class
