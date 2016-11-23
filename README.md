@@ -23,7 +23,7 @@ Update History:
 
 	1.3.0
 	--------
-	Improve organization of script to simplify addition new features
+	Improve organization of script to simplify addition of new features
 
 	1.2.0
 	--------
