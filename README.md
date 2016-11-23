@@ -3,6 +3,8 @@ Synopsis:
 -------------------------------
 Powershell script providing audible notifications of application crash or hang incidents.
 
+Usage:  powershell.exe -file .\SystemEventToSpeech.ps1
+
 Requirements:
 -------------------------------
 
@@ -12,7 +14,7 @@ Requirements:
 
 Notes:
 -------------------------------
-Use the [VirMemTest](https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations/) utility to safely induce hangs/crashes for testing of notifications. 
+The "Hang this UI" and "Crash This App On Exit" features of [VirMemTest](https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations/) can be used to create conditions which would induce SystemEventToSpeech project notifications.  For hang testing, I reccomend configuring VirMemTest to hang it's UI for around 15 seconds in order to best understand latencies involved in unresponsive window detection and notification.
 
 Update History:
 -------------------------------
