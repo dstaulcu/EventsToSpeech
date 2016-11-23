@@ -8,6 +8,7 @@ Provides audible notification for application crash or hang state changes.
 Notes:
 -------------------------------
 	Use the VirMemTest to safely induce hangs/crashes for testing of notifications. 
+	[link to google!](http://www.google.com)
 	https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operationsutility
 
 Requirements:
