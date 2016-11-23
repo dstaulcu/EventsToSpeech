@@ -3,15 +3,15 @@ Synopsis:
 -------------------------------
 Powershell script providing audible notifications of application crash or hang incidents.
 
-Notes:
--------------------------------
-Use the [VirMemTest](https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations/) utility to safely induce hangs/crashes for testing of notifications. 
-
 Requirements:
 
 	Windows 7 (or higher) operating system
 	Powershell execution enabled
 	Execution as standard user
+
+Notes:
+-------------------------------
+Use the [VirMemTest](https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations/) utility to safely induce hangs/crashes for testing of notifications. 
 
 Update History:
 -------------------------------
