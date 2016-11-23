@@ -14,7 +14,7 @@ Requirements:
 
 Notes:
 -------------------------------
-The "Hang this UI" and "Crash This App On Exit" features of [VirMemTest](https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations/) can be used to create conditions which would induce SystemEventToSpeech project notifications.  For hang testing, I reccomend configuring VirMemTest to hang it's UI for around 15 seconds in order to best understand latencies involved in unresponsive window detection and notification.
+The "Hang this UI" and "Crash This App On Exit" features of [VirMemTest](https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations/) can be used to create conditions which induce SystemEventToSpeech project notifications.  I reccomend configuring VirMemTest to hang it's UI for around 15 seconds in order to best understand latencies involved in unresponsive window detection and notification.
 
 Update History:
 -------------------------------
