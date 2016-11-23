@@ -17,23 +17,23 @@ Execution as standard user
 Update History:
 -------------------------------
 
-1.4.0
---------
-Add support for hung window detection using isHungAppWindow API (requires exectuion as user)
+	1.4.0
+	--------
+	Add support for hung window detection using isHungAppWindow API (requires exectuion as user)
 
-1.3.0
---------
-Improve organization of script to simplify addition new features
+	1.3.0
+	--------
+	Improve organization of script to simplify addition new features
 
-1.2.0
---------
-Add support for appliction crash notification (issue #4)
-Add support for mapping of process names to friendly names (issue #3)
+	1.2.0
+	--------
+	Add support for appliction crash notification (issue #4)
+	Add support for mapping of process names to friendly names (issue #3)
 
-1.1.0
---------
-Add support for multiple NT Event Log subscriptions
+	1.1.0
+	--------
+	Add support for multiple NT Event Log subscriptions
 
-1.0.0
---------
-Initial Version
+	1.0.0
+	--------
+	Initial Version
