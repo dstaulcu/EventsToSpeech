@@ -9,7 +9,7 @@ Notes:
 -------------------------------
 	Use the [VirMemTest] utility to safely induce hangs/crashes for testing of notifications. 
 	
-	[VirMemTest]: https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations/	
+	[VirMemTest]: https://blogs.msdn.microsoft.com/aaron_margosis/2013/06/14/virtmemtest-a-utility-to-exercise-memory-and-other-operations
 
 Requirements:
 -------------------------------
