@@ -1,7 +1,7 @@
 
 Synopsis:
 -------------------------------
-Powershell script providing audible notifications of application crash or hang state changes.
+Powershell script providing audible notifications of application crash or hang incidents.
 
 Notes:
 -------------------------------
