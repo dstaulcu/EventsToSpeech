@@ -25,11 +25,7 @@ function Add-NativeMethods()
         }
 "@
 }
-# Add methods here
-Register-NativeMethod "user32.dll" "bool IsHungAppWindow(IntPtr hWnd)"
 
-# This builds the class and registers them (you can only do this one-per-session, as the type cannot be unloaded?)
-Add-NativeMethods
 
 function Get-ProcessFriendlyName($ProcessName)
 {
@@ -46,16 +42,31 @@ function Get-ProcessFriendlyName($ProcessName)
     return $ProcessName
 }
 
-# cleanup any subscriptions hanging around from previous sessions.
-Get-EventSubscriber  | Where-Object -Property SourceIdentifier -Like 'Assistive_*' | Unregister-Event
-Get-Event | Where-Object -Property SourceIdentifier -Like 'Assistive_*' | Remove-Event
-
 # create SpeechSynth object
 Add-Type -AssemblyName System.speech
 $SpeechSynth = New-Object System.Speech.Synthesis.SpeechSynthesizer
 
-# notify users of application startup
-$SpeechSynth.Speak('The system event notification service has started.')
+if ([Environment]::UserInteractive -eq $False ) {
+    $SpeechSynth.Speak('The system event notification service must run as interactive user. Exiting.')
+    $SpeechSynth.Dispose()
+    Exit
+}
+else
+{
+    # notify users of application startup
+    $SpeechSynth.Speak('The system event notification service has started.')
+}
+
+
+# Add methods here
+Register-NativeMethod "user32.dll" "bool IsHungAppWindow(IntPtr hWnd)"
+
+# This builds the class and registers them (you can only do this one-per-session, as the type cannot be unloaded?)
+Add-NativeMethods
+
+# cleanup any subscriptions hanging around from previous sessions.
+Get-EventSubscriber  | Where-Object -Property SourceIdentifier -Like 'Assistive_*' | Unregister-Event
+Get-Event | Where-Object -Property SourceIdentifier -Like 'Assistive_*' | Remove-Event
 
 # Application Error log event subscription
 $WQL_NTLogEvent_Crash = @"
@@ -69,6 +80,8 @@ WHERE TargetInstance isa 'Win32_NTLogEvent'
 "@
 Register-WmiEvent -SourceIdentifier 'Assistive_NTLogEvent_Crash' -Query $WQL_NTLogEvent_Crash
 
+# initialize hung processes collection
+$hungprocesses = [System.Collections.ArrayList]@()
 
 do{
 
@@ -78,7 +91,10 @@ do{
     $processes = Get-Process | Where-Object {($_.MainWindowHandle -ne 0) -and ($_.Name -ne 'dwm')}
     foreach ($process in $processes) {
         $status = [NativeMethods]::IsHungAppWindow($process.MainWindowHandle)
+        
         if ($status -eq $true) {            
+            Write-Host ('Process ' + $process.name + ' with id ' + $process.Id + ' is not responding.')
+            
             if ($hungprocesses.Contains($process.Name + ':' + $process.Id) -eq $false) {
                 $hungprocesses.Add($process.Name + ':' + $process.Id) | Out-Null
                 $hungprocess = Get-ProcessFriendlyName($process.Name)
@@ -97,7 +113,7 @@ do{
                 $SpeechSynth.Speak($message)
 
             }
-        }        
+        } 
     }
 
     # enumerate any new events arriving from event subscriptions
