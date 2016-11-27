@@ -7,7 +7,7 @@ UserEventToSpeech Usage:
 powershell.exe -file .\UserEventToSpeech.ps1			(must run as interactive user)
 
 
-SystemEventToSpeech Usage:
+SystemEventToSpeech Usage:  
 powershell.exe -file .\SystemEventToSpeech.ps1			(must run as system or admin)
 
 
