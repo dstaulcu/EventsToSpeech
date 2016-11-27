@@ -3,9 +3,13 @@ Synopsis:
 -----------------------------------
 Powershell script providing audible notifications of application crash or hang incidents.
 
-Usage:  
+UserEventToSpeech Usage:  
 powershell.exe -file .\UserEventToSpeech.ps1			(must run as interactive user)
+
+
+SystemEventToSpeech Usage:
 powershell.exe -file .\SystemEventToSpeech.ps1			(must run as system or admin)
+
 
 Requirements:
 -----------------------------------
