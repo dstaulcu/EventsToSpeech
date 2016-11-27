@@ -1,7 +1,7 @@
 ﻿<#
 .Synopsis
-   Monitor critcal system/application state changes and verbally notify user using windows SpeechSynthesizer 
-   version 1.4.0
+   Monitor user state changes and verbally notify user using windows SpeechSynthesizer 
+   version 1.5.0
 #>
 
 # Helper functions for building the class
@@ -47,14 +47,14 @@ Add-Type -AssemblyName System.speech
 $SpeechSynth = New-Object System.Speech.Synthesis.SpeechSynthesizer
 
 if ([Environment]::UserInteractive -eq $False ) {
-    $SpeechSynth.Speak('The system event notification service must run as interactive user. Exiting.')
+    $SpeechSynth.Speak('The user event notification service must run as interactive user. Exiting.')
     $SpeechSynth.Dispose()
     Exit
 }
 else
 {
     # notify users of application startup
-    $SpeechSynth.Speak('The system event notification service has started.')
+    $SpeechSynth.Speak('The user event notification service has started.')
 }
 
 
@@ -65,8 +65,8 @@ Register-NativeMethod "user32.dll" "bool IsHungAppWindow(IntPtr hWnd)"
 Add-NativeMethods
 
 # cleanup any subscriptions hanging around from previous sessions.
-Get-EventSubscriber  | Where-Object -Property SourceIdentifier -Like 'Assistive_*' | Unregister-Event
-Get-Event | Where-Object -Property SourceIdentifier -Like 'Assistive_*' | Remove-Event
+Get-EventSubscriber  | Where-Object -Property SourceIdentifier -Like 'AssistiveUser_*' | Unregister-Event
+Get-Event | Where-Object -Property SourceIdentifier -Like 'AssistiveUser_*' | Remove-Event
 
 # Application Error log event subscription
 $WQL_NTLogEvent_Crash = @"
@@ -78,7 +78,7 @@ WHERE TargetInstance isa 'Win32_NTLogEvent'
     AND TargetInstance.SourceName = 'Application Error' 
     AND TargetInstance.EventCode = '1000'
 "@
-Register-WmiEvent -SourceIdentifier 'Assistive_NTLogEvent_Crash' -Query $WQL_NTLogEvent_Crash
+Register-WmiEvent -SourceIdentifier 'AssistiveUser_NTLogEvent_Crash' -Query $WQL_NTLogEvent_Crash
 
 # initialize hung processes collection
 $hungprocesses = [System.Collections.ArrayList]@()
@@ -117,12 +117,12 @@ do{
     }
 
     # enumerate any new events arriving from event subscriptions
-    $Events = Get-Event | Where-Object -Property SourceIdentifier -Like 'Assistive_*'
+    $Events = Get-Event | Where-Object -Property SourceIdentifier -Like 'AssistiveUser_*'
 
     foreach ($event in $events) {
 
         # Handle Crash related events
-        if ($event.SourceIdentifier -eq 'Assistive_NTLogEvent_Crash') {
+        if ($event.SourceIdentifier -eq 'AssistiveUser_NTLogEvent_Crash') {
             # if a crash event
             if ($event.SourceArgs.newevent.TargetInstance.EventCode -eq '1000') {
                 
@@ -144,7 +144,7 @@ do{
 while ($True)
 
 # Dispose of event subscriptions
-Get-EventSubscriber  | Where-Object -Property SourceIdentifier -Like 'Assistive_*' | Unregister-Event
+Get-EventSubscriber  | Where-Object -Property SourceIdentifier -Like 'AssistiveUser_*' | Unregister-Event
 
 # Dispose of speech object
 $SpeechSynth.Dispose()
