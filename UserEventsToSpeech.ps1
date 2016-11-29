@@ -87,19 +87,22 @@ do{
 
     sleep  1
 
+    $datetime = get-date -Format "yyyy-MM-dd @ hh:mm:ss"            
+
     # pInvoke user32.dll isHungAppWindow API
     $processes = Get-Process | Where-Object {($_.MainWindowHandle -ne 0) -and ($_.Name -ne 'dwm')}
     foreach ($process in $processes) {
         $status = [NativeMethods]::IsHungAppWindow($process.MainWindowHandle)
         
-        if ($status -eq $true) {            
-            Write-Host ('Process ' + $process.name + ' with id ' + $process.Id + ' is not responding.')
+        if ($status -eq $true) {
+
+            Write-Host ('[' + $datetime + ']' + ' Process ' + $process.name + ' with id ' + $process.Id + ' is not responding.')
             
             if ($hungprocesses.Contains($process.Name + ':' + $process.Id) -eq $false) {
                 $hungprocesses.Add($process.Name + ':' + $process.Id) | Out-Null
                 $hungprocess = Get-ProcessFriendlyName($process.Name)
                 $message = $hungprocess + ' entered an unresponsive state.'
-                write-host $message
+                write-host ('[' + $datetime + '] ' + $message)
                 $SpeechSynth.Speak($message)
 
             }
@@ -109,7 +112,7 @@ do{
                 $hungprocesses.Remove($process.Name + ':' + $process.Id)
                 $hungprocess = Get-ProcessFriendlyName($process.Name)
                 $message = $hungprocess + ' returned to a responsive state.'
-                write-host $message
+                write-host ('[' + $datetime + '] ' + $message)
                 $SpeechSynth.Speak($message)
 
             }
@@ -127,14 +130,20 @@ do{
             if ($event.SourceArgs.newevent.TargetInstance.EventCode -eq '1000') {
                 
                 $process = ([regex]"(\w+).exe,").match($event.SourceArgs.newevent.targetinstance.message).Groups[1].Value
-                $process = Get-ProcessFriendlyName($process)
-                $message = $process + ' crashed and must be restarted.'
+
+
+                $process_id = ([regex]"Faulting process id: (\S+)").match($event.SourceArgs.newevent.targetinstance.message).Groups[1].Value
+                $process_id = [int]$process_id
+
+                $process_friendly = Get-ProcessFriendlyName($process)
+                $message = $process_friendly + ' crashed and must be restarted.'
 
                 # Remove notification event now that necessary information has been extracted
                 $event | Remove-Event
 
                 # notify user
-                write-host $message
+                Write-Host ('[' + $datetime + ']' + ' Process ' + $process + ' with id ' + [string]$process_id + ' crashed.')
+                write-host ('[' + $datetime + '] ' + $message)
                 $SpeechSynth.Speak($message)
 
             }
