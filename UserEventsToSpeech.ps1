@@ -1,7 +1,7 @@
 ﻿<#
 .Synopsis
    Monitor user state changes and verbally notify user using windows SpeechSynthesizer 
-   version 1.5.0
+   version 1.5.1
 #>
 
 # Helper functions for building the class
