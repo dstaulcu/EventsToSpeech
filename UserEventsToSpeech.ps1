@@ -1,7 +1,7 @@
 ﻿<#
 .Synopsis
    Monitor user state changes and verbally notify user using windows SpeechSynthesizer 
-   version 1.5.1
+   version 1.5.2
 #>
 
 # Helper functions for building the class
@@ -148,7 +148,24 @@ do{
 
             }
         }          
-    }  
+    }
+    
+    # Handle networkprofile (disconnect/connect) events.
+    $event = Get-WinEvent -FilterHashtable @{Logname="Microsoft-Windows-NetworkProfile/Operational";ProviderName="Microsoft-Windows-NetworkProfile";Id=10000,10001;Data="Network";StartTime=(Get-Date).AddSeconds(-1)} -ErrorAction SilentlyContinue
+    if ($event) {
+        $connection_name = ([regex]"Name:\s+(\S+)\r\n").match($event.Message).Groups[1].Value
+        if ($event.Id -eq 10001) {
+            $message = 'Network connection ' + $connection_name  + ' disconnected.'
+            write-host ('[' + $datetime + '] ' + $message)
+            $SpeechSynth.Speak($message)
+        }
+        if ($event.Id -eq 10000) {
+            $message = 'Network connection ' + $connection_name  + ' connected.'
+            write-host ('[' + $datetime + '] ' + $message)
+            $SpeechSynth.Speak($message)
+        }
+    }
+
 }
 while ($True)
 

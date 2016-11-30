@@ -32,14 +32,14 @@ SystemEventToSpeech Update History:
 UserEventToSpeech Update History:
 -----------------------------------
 
-	1.5.1
+	1.5.2
 	--------
-	Added timestamps to console output
-	Added process id of crashed process to console output
-
+	Added notification when network is connected or reconnected
 	
 	Previous
 	--------
+	Added timestamps to console output
+	Added process id of crashed process to console output
 	Renamed project and powershell scripts as necessary to allow for user and system components
 	Add support for hung window detection using isHungAppWindow API. (requires exectuion as user)
 	Improve organization of script to simplify addition of new features
