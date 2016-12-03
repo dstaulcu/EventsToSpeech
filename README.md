@@ -32,6 +32,12 @@ SystemEventToSpeech Update History:
 UserEventToSpeech Update History:
 -----------------------------------
 
+	1.6.0
+	Consolidated on single event log monitoring strategy [Issue 13](https://github.com/dstaulcu/EventsToSpeech/issues/13)
+	Reduced timing risk that even log records would be missed which speech is invoked between polling intervals. [Issue 14](https://github.com/dstaulcu/EventsToSpeech/issues/14)
+	Added incident details to stdout [Issue 15](https://github.com/dstaulcu/EventsToSpeech/issues/15)
+
+
 	1.5.2
 	--------
 	Added notification when network is connected or reconnected
