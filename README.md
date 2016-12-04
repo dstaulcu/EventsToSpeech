@@ -25,16 +25,21 @@ The "Hang this UI" and "Crash This App On Exit" features of [VirMemTest](https:/
 UserEventToSpeech Update History:
 -----------------------------------
 
+	
 	1.6.0
-	Consolidated on single event log monitoring strategy [Issue 13](https://github.com/dstaulcu/EventsToSpeech/issues/13)
-	Reduced timing risk that even log records would be missed which speech is invoked between polling intervals. [Issue 14](https://github.com/dstaulcu/EventsToSpeech/issues/14)
-	Added incident details to stdout [Issue 15](https://github.com/dstaulcu/EventsToSpeech/issues/15)
-
+	--------
+	Consolidated on single event log monitoring strategy 
+	See: https://github.com/dstaulcu/EventsToSpeech/issues/13
+	Reduced risk that event log records would be missed when speak method is invoked between
+	See: https://github.com/dstaulcu/EventsToSpeech/issues/14
+	Added informational events to stdout
+	https://github.com/dstaulcu/EventsToSpeech/issues/15
 
 	1.5.2
 	--------
-	Added notification when network is connected or reconnected
-
+	Added notification when network interface enters a disconnected or connected state
+	See: https://github.com/dstaulcu/EventsToSpeech/issues/12
+	
 	Previous
 	--------
 	Added timestamps to console output
