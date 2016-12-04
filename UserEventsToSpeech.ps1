@@ -2,9 +2,6 @@
 .Synopsis
    Monitor user state changes and verbally notify user using windows SpeechSynthesizer 
    version 1.6.0
-   # [issue x] - Consolidate onto Get-WinEvent cmdlet to check for eventlog state changes. [done]
-   # [issue y] - Add print of speak action statements to stdout. [done]
-   # [issue z] - Correct timing issue where events can be missed due to wait times associated with speak commands [done]
 #>
 
 # Helper functions for building the class
