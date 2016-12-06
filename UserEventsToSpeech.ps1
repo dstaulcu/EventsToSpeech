@@ -47,14 +47,14 @@ Add-Type -AssemblyName System.speech
 $SpeechSynth = New-Object System.Speech.Synthesis.SpeechSynthesizer
 
 if ([Environment]::UserInteractive -eq $False ) {
-    $SpeechSynth.Speak('The user event notification service must run as interactive user. Exiting.')
+    $SpeechSynth.SpeakAsync('The user event notification service must run as interactive user. Exiting.') | out-null
     $SpeechSynth.Dispose()
     Exit
 }
 else
 {
     # notify users of application startup
-    $SpeechSynth.Speak('The user event notification service has started.')
+    $SpeechSynth.SpeakAsync('The user event notification service has started.') | out-null
 }
 
 
@@ -87,7 +87,7 @@ do{
                 $hungprocess = Get-ProcessFriendlyName($process.Name)
                 $message = $hungprocess + ' entered an unresponsive state.'
                 write-host ('[' + $datetime + ']' + ' - SPEAK - ' +  $message)
-                $SpeechSynth.Speak($message)
+                $SpeechSynth.SpeakAsync($message) | out-null
 
             }
         }
@@ -97,7 +97,7 @@ do{
                 $hungprocess = Get-ProcessFriendlyName($process.Name)
                 $message = $hungprocess + ' returned to a responsive state.'
                 write-host ('[' + $datetime + ']' + ' - SPEAK - ' + $message)
-                $SpeechSynth.Speak($message)
+                $SpeechSynth.SpeakAsync($message) | out-null
 
             }
         } 
@@ -105,7 +105,7 @@ do{
 
 
     # Handle crash events 
-    $events = Get-WinEvent -FilterHashtable @{Logname="Application";ProviderName="Application Error";Id=1000;StartTime=(Get-Date).AddSeconds(-30)} -ErrorAction SilentlyContinue
+    $events = Get-WinEvent -FilterHashtable @{Logname="Application";ProviderName="Application Error";Id=1000;StartTime=(Get-Date).AddSeconds(-5)} -ErrorAction SilentlyContinue
 
     foreach ($event in $events) {
 
@@ -123,14 +123,14 @@ do{
                 # notify user
                 Write-Host ('[' + $datetime + ']' + ' - PRINT - ' + 'Process ' + $process + ' with id ' + [string]$process_id + ' crashed.')
                 write-host ('[' + $datetime + ']' + ' - SPEAK - ' + $message)
-                $SpeechSynth.Speak($message)
+                $SpeechSynth.SpeakAsync($message) | out-null
             }
 
         }
     }
 
     # Handle networkprofile (disconnect/connect) events.
-    $events = Get-WinEvent -FilterHashtable @{Logname="Microsoft-Windows-NetworkProfile/Operational";ProviderName="Microsoft-Windows-NetworkProfile";Id=10000,10001;StartTime=(Get-Date).AddSeconds(-30)} -ErrorAction SilentlyContinue
+    $events = Get-WinEvent -FilterHashtable @{Logname="Microsoft-Windows-NetworkProfile/Operational";ProviderName="Microsoft-Windows-NetworkProfile";Id=10000,10001;StartTime=(Get-Date).AddSeconds(-5)} -ErrorAction SilentlyContinue
 
     foreach ($event in $events) {
 
@@ -142,7 +142,7 @@ do{
                 write-host ('[' + $datetime + ']' + ' - PRINT - ' + 'Network interface ' + $connection_name + ' disconnected.')
                 $message = 'Network interface disconnected.'
                 write-host ('[' + $datetime + ']' + ' - SPEAK - ' + $message)
-                $SpeechSynth.Speak($message)
+                $SpeechSynth.SpeakAsync($message) | out-null
             }
             if ($event.Id -eq 10000) {
                 if ($event.message -like "*Identifying*") {
@@ -151,7 +151,7 @@ do{
                     write-host ('[' + $datetime + ']' + ' - PRINT - ' + 'Network interface ' + $connection_name + ' connected.')
                     $message = 'Network interface connected.'
                     write-host ('[' + $datetime + ']' + ' - SPEAK - ' + $message)
-                    $SpeechSynth.Speak($message)
+                    $SpeechSynth.SpeakAsync($message) | out-null
                 }
 
             }
